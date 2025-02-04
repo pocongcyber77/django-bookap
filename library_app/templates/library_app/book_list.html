@@ -1,0 +1,37 @@
+{% extends 'library_app/base.html' %}
+{% block content %}
+<h2>Book List</h2>
+
+{% if books %}
+    <ul>
+        {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong> by {{ book.author }}
+
+                {% if book.added_by == user %}
+                    <!-- Button to delete book -->
+                    <a href="{% url 'delete_book' book.id %}">Delete</a>
+                {% endif %}
+
+                <!-- Reviews for the book -->
+                <ul>
+                    {% for review in book.reviews.all %}
+                        <li>{{ review.user.username }}: {{ review.review_text }}</li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Form to add a review -->
+                <form method="post" action="{% url 'add_review' book.id %}">
+                    {% csrf_token %}
+                    <input type="text" name="review_text" placeholder="Write a review..." required>
+                    <button type="submit">Submit</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% else %}
+    <p>No books available.</p>
+{% endif %}
+
+{% endblock %}

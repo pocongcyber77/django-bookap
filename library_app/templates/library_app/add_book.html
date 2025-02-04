@@ -1,0 +1,17 @@
+{% extends 'library_app/base.html' %}
+{% block content %}
+<h2>Add Book</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Title:</label>
+    <input type="text" name="title" required><br>
+
+    <label>Author:</label>
+    <input type="text" name="author" required><br>
+
+    <label>Description (optional):</label>
+    <textarea name="description"></textarea><br>
+
+    <button type="submit">Add Book</button>
+</form>
+{% endblock %}
