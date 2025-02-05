@@ -8,9 +8,11 @@
             <li>
                 <strong>{{ book.title }}</strong> by {{ book.author }}
 
-                <!-- Show Delete button for authenticated users who created the book -->
                 {% if user.is_authenticated and book.added_by == user %}
+                    <!-- Button to delete book -->
                     <a href="{% url 'delete_book' book.id %}">Delete</a>
+                    <!-- Button to edit book -->
+                    <a href="{% url 'edit_book' book.id %}">Edit</a>
                 {% endif %}
 
                 <!-- Reviews for the book -->
@@ -20,7 +22,7 @@
                     {% endfor %}
                 </ul>
 
-                <!-- Show review form for authenticated users -->
+                <!-- Show review form only for authenticated users -->
                 {% if user.is_authenticated %}
                     <form method="post" action="{% url 'add_review' book.id %}">
                         {% csrf_token %}

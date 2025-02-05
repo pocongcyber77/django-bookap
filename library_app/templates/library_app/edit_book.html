@@ -1,0 +1,18 @@
+{% extends 'library_app/base.html' %}
+{% block content %}
+<h2>Edit Book</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Title:</label>
+    <input type="text" name="title" value="{{ book.title }}" required><br>
+
+    <label>Author:</label>
+    <input type="text" name="author" value="{{ book.author }}" required><br>
+
+    <label>Description (optional):</label>
+    <textarea name="description">{{ book.description }}</textarea><br>
+
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

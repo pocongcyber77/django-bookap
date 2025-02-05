@@ -36,6 +36,28 @@ def delete_book(request, book_id):
 
     return redirect('book_list')
 
+@login_required
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+
+    # Ensure that only the user who created the book can edit it
+    if book.added_by != request.user:
+        return redirect('book_list')  # Redirect if the user isn't the owner of the book
+
+    if request.method == "POST":
+        title = request.POST.get('title')
+        author = request.POST.get('author')
+        description = request.POST.get('description', '')
+
+        # Update book details
+        book.title = title
+        book.author = author
+        book.description = description
+        book.save()
+
+        return redirect('book_list')  # Redirect to book list after editing
+
+    return render(request, 'library_app/edit_book.html', {'book': book})
 
 
 
