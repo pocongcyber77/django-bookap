@@ -8,8 +8,8 @@
             <li>
                 <strong>{{ book.title }}</strong> by {{ book.author }}
 
-                {% if book.added_by == user %}
-                    <!-- Button to delete book -->
+                <!-- Show Delete button for authenticated users who created the book -->
+                {% if user.is_authenticated and book.added_by == user %}
                     <a href="{% url 'delete_book' book.id %}">Delete</a>
                 {% endif %}
 
@@ -20,18 +20,25 @@
                     {% endfor %}
                 </ul>
 
-                <!-- Form to add a review -->
-                <form method="post" action="{% url 'add_review' book.id %}">
-                    {% csrf_token %}
-                    <input type="text" name="review_text" placeholder="Write a review..." required>
-                    <button type="submit">Submit</button>
-                </form>
+                <!-- Show review form for authenticated users -->
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'add_review' book.id %}">
+                        {% csrf_token %}
+                        <input type="text" name="review_text" placeholder="Write a review..." required>
+                        <button type="submit">Submit</button>
+                    </form>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
 
 {% else %}
     <p>No books available.</p>
+{% endif %}
+
+<!-- Button to add a new book (only visible for authenticated users) -->
+{% if user.is_authenticated %}
+    <a href="{% url 'add_book' %}">Add Book</a>
 {% endif %}
 
 {% endblock %}

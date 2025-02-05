@@ -5,13 +5,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from .models import Book, Review
 
-# @login_required
 def book_list(request):
     if request.user.is_authenticated:
-        books = Book.objects.filter(added_by=request.user)  # Only show books added by the logged-in user
+        books = Book.objects.all()  # Show all books for authenticated users
     else:
-        books = Book.objects.all()  # Show all books to unauthenticated users
-    
+        books = Book.objects.all()  # Show all books for unauthenticated users
+
     return render(request, "library_app/book_list.html", {"books": books})
 
 @login_required
@@ -30,21 +29,16 @@ def add_book(request):
 @login_required
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    
+
     # Ensure only the user who added the book can delete it
     if book.added_by == request.user:
         book.delete()
-        
+
     return redirect('book_list')
 
 
-@login_required
-def add_review(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    if request.method == "POST":
-        review_text = request.POST['review_text']
-        Review.objects.create(book=book, user=request.user, review_text=review_text)
-    return redirect('book_list')
+
+
 
 
 def login_user(request):
@@ -61,7 +55,7 @@ def login_user(request):
 @login_required
 def logout_user(request):
     logout(request)
-    return redirect('login')  # Redirect to login page after logout
+    return redirect('/')  # Redirect to login page after logout
 
 def register_user(request):
     if request.method == "POST":
@@ -85,3 +79,4 @@ def add_review(request, book_id):
             Review.objects.create(book=book, user=request.user, review_text=review_text)
 
     return redirect('book_list')
+
