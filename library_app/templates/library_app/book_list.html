@@ -1,46 +1,37 @@
 {% extends 'library_app/base.html' %}
+
 {% block content %}
-<h2>Book List</h2>
+<div class="container">
+    <h1 class="text-emerald">Book Collection</h1>
+    
+    {% if books %}
+        <div class="grid">
+            {% for book in books %}
+                <div class="card cyber-border">
+                    <h3 class="text-cyan">{{ book.title }}</h3>
+                    <p class="text-secondary">Author: {{ book.author }}</p>
+                    <p class="text-secondary">ISBN: {{ book.isbn }}</p>
+                    <p class="text-secondary">Published: {{ book.publication_date }}</p>
+                    
+                    {% if user.is_authenticated %}
+                        <div class="mt-3">
+                            <a href="{% url 'edit_book' book.id %}" class="btn btn-primary">Edit</a>
+                            <a href="{% url 'delete_book' book.id %}" class="btn text-fuchsia">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card text-secondary">
+            <p>No books available.</p>
+        </div>
+    {% endif %}
 
-{% if books %}
-    <ul>
-        {% for book in books %}
-            <li>
-                <strong>{{ book.title }}</strong> by {{ book.author }}
-
-                {% if user.is_authenticated and book.added_by == user %}
-                    <!-- Button to delete book -->
-                    <a href="{% url 'delete_book' book.id %}">Delete</a>
-                    <!-- Button to edit book -->
-                    <a href="{% url 'edit_book' book.id %}">Edit</a>
-                {% endif %}
-
-                <!-- Reviews for the book -->
-                <ul>
-                    {% for review in book.reviews.all %}
-                        <li>{{ review.user.username }}: {{ review.review_text }}</li>
-                    {% endfor %}
-                </ul>
-
-                <!-- Show review form only for authenticated users -->
-                {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'add_review' book.id %}">
-                        {% csrf_token %}
-                        <input type="text" name="review_text" placeholder="Write a review..." required>
-                        <button type="submit">Submit</button>
-                    </form>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-
-{% else %}
-    <p>No books available.</p>
-{% endif %}
-
-<!-- Button to add a new book (only visible for authenticated users) -->
-{% if user.is_authenticated %}
-    <a href="{% url 'add_book' %}">Add Book</a>
-{% endif %}
-
+    {% if user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{% url 'add_book' %}" class="btn btn-primary cyber-border">Add New Book</a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
