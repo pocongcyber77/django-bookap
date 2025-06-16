@@ -11,7 +11,7 @@ WORKDIR /app
 #     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-COPY requirements.txt /app/
+COPY requirements.txt /app/ 
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
