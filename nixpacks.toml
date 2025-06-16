@@ -1,12 +1,13 @@
 [build]
-python-version = "3.10" # You can adjust this to your specific Python version if needed
+python-version = "3.10"
 
-[phases.setup]
+[phases.install]
 commands = [
     "python3 -m venv /opt/venv",
     ". /opt/venv/bin/activate",
+    "python3 -m ensurepip --upgrade",
     "python3 -m pip install -r requirements.txt"
 ]
 
 [start]
-cmd = "gunicorn library_project.wsgi:application" 
+cmd = "/opt/venv/bin/gunicorn library_project.wsgi:application" 
