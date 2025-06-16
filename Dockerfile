@@ -1,31 +1,36 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim-buster
+# Build stage
+FROM python:3.10-slim-buster as builder
 
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies if any (e.g., for Pillow, psycopg2-binary)
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Django first
-RUN pip install --no-cache-dir django
-
-# Copy requirements file
-COPY requirements.txt /app/
-
 # Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
-COPY . /app/
+# Final stage
+FROM python:3.10-slim-buster
+
+# Set working directory
+WORKDIR /app
+
+# Copy only necessary files from builder
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Copy application code
+COPY . .
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose the port that Gunicorn will listen on
+# Expose port
 EXPOSE 8000
 
-# Run Gunicorn when the container launches
+# Run Gunicorn
 CMD ["gunicorn", "library_project.wsgi:application", "--bind", "0.0.0.0:8000"] 
