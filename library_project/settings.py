@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', "django-insecure-jca6s(n=@vh5p2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['*']  # Update this with your actual domain in production
+ALLOWED_HOSTS = ['*']  # Will be overridden in production
 
 
 # Application definition
@@ -133,6 +133,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Security settings
 if not DEBUG:
+    ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -141,4 +142,4 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

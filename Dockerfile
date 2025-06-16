@@ -23,7 +23,8 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE=library_project.settings \
-    DJANGO_DEBUG=False
+    DJANGO_DEBUG=False \
+    PORT=8000
 
 # Copy only necessary files from builder
 COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
@@ -32,11 +33,21 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 # Copy application code
 COPY . .
 
+# Create a non-root user
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
 
-# Run Gunicorn
-CMD ["gunicorn", "library_project.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120"] 
+# Create a script to run the application
+RUN echo '#!/bin/bash\n\
+python manage.py migrate\n\
+gunicorn library_project.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 2 --worker-class gthread --timeout 120 --access-logfile - --error-logfile - --capture-output --log-level info' > /app/start.sh && \
+chmod +x /app/start.sh
+
+# Run the start script
+CMD ["/app/start.sh"] 
