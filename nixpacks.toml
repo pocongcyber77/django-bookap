@@ -9,4 +9,4 @@ commands = [
 ]
 
 [start]
-cmd = "python /opt/venv/bin/gunicorn library_project.wsgi:application" 
+cmd = "gunicorn library_project.wsgi:application" 
